@@ -61,7 +61,12 @@ export default function App() {
       </nav>
 
       <main className="main">
-        {error ? <div className="error" style={{ marginBottom: 12 }}>{error}</div> : null}
+        {error ? (
+          <div className="error" style={{ marginBottom: 12 }}>
+            Console API unreachable ({error}). Retrying every 3s - make sure the server is
+            running on this host and port.
+          </div>
+        ) : null}
         {tab === "dashboard" && <DashboardView snapshot={snapshot} />}
         {tab === "chat" && <ChatView sessions={snapshot?.sessions ?? []} refresh={refresh} />}
         {tab === "agents" && <AgentsView sessions={snapshot?.sessions ?? []} />}

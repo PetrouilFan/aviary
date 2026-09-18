@@ -12,6 +12,7 @@ export function useSnapshot(): {
   const [connected, setConnected] = useState(false);
   const [error, setError] = useState("");
   const timer = useRef<number | null>(null);
+  const retry = useRef<number | null>(null);
 
   const refresh = useCallback(() => {
     api
@@ -19,8 +20,26 @@ export function useSnapshot(): {
       .then((snap) => {
         setSnapshot(snap);
         setError("");
+        if (retry.current) {
+          window.clearInterval(retry.current);
+          retry.current = null;
+        }
       })
-      .catch((err: Error) => setError(err.message));
+      .catch((err: Error) => {
+        setError(err.message);
+        if (!retry.current) {
+          retry.current = window.setInterval(() => refreshRef.current(), 3000);
+        }
+      });
+  }, []);
+
+  const refreshRef = useRef(refresh);
+  refreshRef.current = refresh;
+
+  useEffect(() => {
+    return () => {
+      if (retry.current) window.clearInterval(retry.current);
+    };
   }, []);
 
   useEffect(() => {
