@@ -20,7 +20,14 @@ DAEMON=0
 PIDFILE=".run/aviary.pid"
 LOGFILE=".run/aviary.log"
 
+UNIT="aviary-console"
+
 if [ "${1:-}" = "stop" ]; then
+  if command -v systemctl >/dev/null 2>&1 && systemctl --user is-active "$UNIT" >/dev/null 2>&1; then
+    systemctl --user stop "$UNIT"
+    echo "aviary: stopped systemd unit $UNIT"
+    exit 0
+  fi
   if [ ! -f "$PIDFILE" ]; then
     echo "aviary: not running (no $PIDFILE)"
     exit 0
@@ -79,6 +86,21 @@ fi
 
 if [ "$DAEMON" = "1" ]; then
   mkdir -p .run
+  if command -v systemd-run >/dev/null 2>&1 && systemctl --user is-system-running >/dev/null 2>&1; then
+    if systemctl --user is-active "$UNIT" >/dev/null 2>&1; then
+      echo "aviary: already running as systemd unit $UNIT at http://$HOST:$PORT"
+      exit 0
+    fi
+    systemd-run --user --unit="$UNIT" --collect \
+      --working-directory="$PWD" \
+      --property=Restart=on-failure \
+      --property=StandardOutput="append:$PWD/$LOGFILE" \
+      --property=StandardError="append:$PWD/$LOGFILE" \
+      .venv/bin/python -m aviary serve --root "$ROOT" --host "$HOST" --port "$PORT"
+    echo "aviary: running at http://$HOST:$PORT (systemd unit $UNIT, log $LOGFILE)"
+    echo "aviary: stop with ./start.sh stop   (journal: journalctl --user -u $UNIT -f)"
+    exit 0
+  fi
   if [ -f "$PIDFILE" ] && kill -0 "$(cat "$PIDFILE")" 2>/dev/null; then
     echo "aviary: already running (pid $(cat "$PIDFILE")) at http://$HOST:$PORT"
     exit 0
