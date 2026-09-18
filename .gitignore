@@ -10,3 +10,5 @@ build/
 web/node_modules/
 web/dist/
 aviary-root/
+
+*.tsbuildinfo
