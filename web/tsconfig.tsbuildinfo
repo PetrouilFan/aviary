@@ -1,0 +1,1 @@
+{"root":["./src/App.tsx","./src/api.ts","./src/main.tsx","./src/types.ts","./src/components/AgentsView.tsx","./src/components/ChatView.tsx","./src/components/DashboardView.tsx","./src/components/EvalsView.tsx","./src/components/JobsView.tsx","./src/components/MemoryView.tsx","./src/components/ui.tsx","./src/hooks/useSnapshot.ts"],"version":"5.9.3"}

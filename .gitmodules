@@ -1,0 +1,4 @@
+[submodule "canary"]
+	path = canary
+	url = https://github.com/PetrouilFan/canary.git
+	branch = main
