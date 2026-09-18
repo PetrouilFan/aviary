@@ -11,5 +11,10 @@ web/node_modules/
 web/dist/
 aviary-root/
 .run/
-
 *.tsbuildinfo
+
+# Canary runtime state, for any root directory name
+shared/
+releases/
+current
+codebase.lock
