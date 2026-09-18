@@ -25,19 +25,24 @@ Aviary always tracks a working Canary revision.
 ```bash
 git clone --recurse-submodules https://github.com/PetrouilFan/aviary.git
 cd aviary
-uv sync --extra dev
-
-# Bootstrap a Canary root (or reuse an existing one with --root)
-uv run aviary init --root ./aviary-root
-
-# Build the web UI (first time only; or use the Vite dev server)
-cd web && npm install && npm run build && cd ..
-
-# Serve the console + embedded agent
-uv run aviary serve --root ./aviary-root --port 8091
+./start.sh --root ./aviary-root --port 8091
 ```
 
+`start.sh` creates the Python environment, builds the web UI, bootstraps the
+Canary root if needed, and serves the console. Use `./start.sh --daemon` to run
+it in the background (pid in `.run/aviary.pid`, log in `.run/aviary.log`) and
+`./start.sh stop` to stop it.
+
 Open <http://127.0.0.1:8091>.
+
+Manual equivalent:
+
+```bash
+uv sync --extra dev
+uv run aviary init --root ./aviary-root
+(cd web && npm install && npm run build)
+uv run aviary serve --root ./aviary-root --port 8091
+```
 
 To update the embedded Canary:
 
